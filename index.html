@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yogesh — Products, shipped and in progress</title>
+<meta name="description" content="Solo founder shipping products end to end. Live apps, open-source tools, and a visible pipeline of what's in build.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f1ea; --ink:#101214; --ink2:#e9e4d8; --mute:#6d7278; --line:#d9d4c8;
+    --hot:#ff4a1c; --lime:#c6f432; --white:#fff;
+    --display:"Inter Tight",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){ --paper:#0d0f11; --ink:#f3f1ea; --ink2:#15181c; --mute:#8d939b; --line:#262b31; }
+  }
+  :root[data-theme="dark"]{ --paper:#0d0f11; --ink:#f3f1ea; --ink2:#15181c; --mute:#8d939b; --line:#262b31; }
+  :root[data-theme="light"]{ --paper:#f4f1ea; --ink:#101214; --ink2:#e9e4d8; --mute:#6d7278; --line:#d9d4c8; }
+
+  /* bright / dark view switch: icon only */
+  .switch{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--ink);display:inline-grid;place-items:center;cursor:pointer;transition:border-color .3s,transform .3s}
+  .switch:hover{border-color:var(--ink);transform:rotate(-12deg)}
+  .switch svg{width:20px;height:20px;grid-area:1/1}
+  .switch .i-moon{display:none}
+  :root[data-theme="light"] .switch .i-sun{display:none}
+  :root[data-theme="light"] .switch .i-moon{display:block}
+  :root:not([data-theme="light"]) .switch .i-sun{display:block}
+  :root:not([data-theme="light"]) .switch .i-moon{display:none}
+
+  /* hire me button + modal */
+  .pill{border:0;cursor:pointer;font-family:var(--display)}
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(8,10,12,.6);backdrop-filter:blur(4px)}
+  .modal.open{display:flex}
+  .sheet{width:min(560px,100%);max-height:calc(100svh - 36px);overflow:auto;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:24px;padding:clamp(22px,4vw,34px);position:relative}
+  .sheet h3{font-size:clamp(26px,4vw,34px);font-weight:700;letter-spacing:-.03em;margin-top:8px}
+  .sheet .sub{color:var(--mute);margin-top:8px;font-size:15px}
+  .x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--ink);font-size:18px;cursor:pointer}
+  .prog{height:4px;background:var(--line);border-radius:99px;margin-top:20px;overflow:hidden}
+  .prog i{display:block;height:100%;width:0;background:var(--hot);transition:width .4s}
+  .q{display:none;margin-top:24px}
+  .q.on{display:block}
+  .q label.lbl{font-weight:600;font-size:18px;letter-spacing:-.01em;display:block}
+  .opts{display:grid;gap:10px;margin-top:14px}
+  .opt{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;cursor:pointer;font-size:15px;background:var(--ink2);color:var(--ink)}
+  .opt input{accent-color:var(--hot);width:18px;height:18px}
+  .opt:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .field{display:grid;gap:12px;margin-top:14px}
+  .field input,.field textarea{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--ink2);color:var(--ink);font:inherit;font-size:15px}
+  .field textarea{min-height:110px;resize:vertical}
+  .nav-row{display:flex;justify-content:space-between;gap:12px;margin-top:26px;align-items:center}
+  .btn{padding:13px 20px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font:600 15px var(--display);cursor:pointer}
+  .btn.ghost{background:none;color:var(--ink)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .err{color:var(--hot);font-size:14px;margin-top:10px;min-height:1.2em}
+  .fine{color:var(--mute);font-size:13px;margin-top:18px}
+  .fine a{color:var(--ink)}
+  .thanks{display:none;text-align:left;margin-top:24px}
+  .thanks.on{display:block}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--display);line-height:1.45;overflow-x:hidden}
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+  .eyebrow b{color:var(--hot);font-weight:500}
+  h1,h2,h3{letter-spacing:-.035em;line-height:.98}
+  h2{font-size:clamp(36px,5.6vw,68px);font-weight:700;margin-top:14px}
+
+  /* header */
+  header.top{position:fixed;inset:0 0 auto;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:color-mix(in srgb,var(--paper) 82%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+  header.top.scrolled{border-color:var(--line)}
+  .brand{font-family:var(--mono);font-size:14px;text-decoration:none;letter-spacing:.02em}
+  .brand em{font-style:normal;color:var(--hot)}
+  nav.links{display:flex;gap:20px;font-size:14px}
+  nav.links a{text-decoration:none;color:var(--mute)} nav.links a:hover{color:var(--ink)}
+  @media (max-width:620px){nav.links a:not(.keep){display:none}}
+  .pill{display:inline-block;padding:10px 16px;border-radius:999px;background:var(--ink);color:var(--paper);text-decoration:none;font-size:14px;font-weight:600}
+
+  /* hero */
+  .hero{min-height:100svh;padding:120px 0 40px;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+  .hero h1{font-size:clamp(54px,11.5vw,176px);font-weight:800;letter-spacing:-.05em;line-height:.9}
+  .hero h1 .ln{display:block;overflow:hidden;padding-bottom:.06em}
+  .hero h1 .ch{display:inline-block;transform:translateY(105%);transition:transform .9s cubic-bezier(.2,.75,.1,1)}
+  .hero h1 .ch.in{transform:none}
+  .hero h1 .hot{color:var(--hot)}
+  .hero-foot{display:grid;gap:24px;grid-template-columns:1fr;margin-top:48px;align-items:end}
+  @media (min-width:820px){.hero-foot{grid-template-columns:1.2fr 1fr auto}}
+  .hero-foot p{font-size:clamp(18px,2vw,22px);color:var(--ink);opacity:.85;max-width:520px}
+  .hero-foot p span{color:var(--mute)}
+  .scrollcue{font-family:var(--mono);font-size:12px;color:var(--mute);display:flex;align-items:center;gap:10px}
+  .scrollcue i{width:1px;height:44px;background:var(--ink);display:block;animation:drip 1.8s infinite}
+  @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* logo-style stat strip */
+  .strip{border-block:1px solid var(--ink);margin-top:60px}
+  .strip .wrap{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+  @media (min-width:820px){.strip .wrap{grid-template-columns:repeat(4,1fr)}}
+  .stat{padding:28px 16px;border-left:1px solid var(--line)}
+  .stat:first-child{border-left:0}
+  .stat b{display:block;font-size:clamp(40px,6vw,72px);font-weight:800;letter-spacing:-.04em;line-height:1}
+  .stat span{color:var(--mute);font-size:14px}
+
+  section{padding:130px 0;position:relative}
+  .rv{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.75,.1,1)}
+  .rv.in{opacity:1;transform:none}
+
+  /* pipeline */
+  .pipe{display:grid;gap:14px;margin-top:56px}
+  @media (min-width:900px){.pipe{grid-template-columns:repeat(4,1fr)}}
+  .col{background:var(--ink2);border:1px solid var(--line);border-radius:18px;padding:16px;min-height:280px}
+  /* column order: Live, Testing, In progress, Planned (source order is Planned, In progress, Testing, Live) */
+  .pipe > .col:nth-child(1){order:4}
+  .pipe > .col:nth-child(2){order:3}
+  .pipe > .col:nth-child(3){order:2}
+  .pipe > .col:nth-child(4){order:1}
+  .col h4{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;color:var(--mute);margin-bottom:12px}
+  .col h4 b{color:var(--ink);font-weight:500}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;transition:transform .35s,border-color .35s}
+  .card:hover{transform:translateY(-3px);border-color:var(--ink)}
+  .card .nm{font-weight:700;font-size:17px;letter-spacing:-.02em}
+  .card .st{font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:4px}
+  .card .nx{font-family:var(--mono);font-size:11.5px;color:var(--mute);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .card .bd{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:999px;background:var(--lime);color:#111}
+  .card.hot .bd{background:var(--hot);color:#fff}
+  .card.mute .bd{background:transparent;border:1px solid var(--line);color:var(--mute)}
+  .legend{margin-top:18px;font-family:var(--mono);font-size:12px;color:var(--mute)}
+
+  /* shipped carousel */
+  .track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 20px;margin-top:48px;scrollbar-width:none}
+  .track::-webkit-scrollbar{display:none}
+  .slide{flex:0 0 min(340px,80vw);scroll-snap-align:start;background:#101214;color:#f4f1ea;border-radius:22px;padding:26px;min-height:300px;display:flex;flex-direction:column;justify-content:space-between}
+  .slide .d{font-family:var(--mono);font-size:12px;color:var(--lime)}
+  .slide h3{font-size:26px;font-weight:700;letter-spacing:-.03em;margin-top:14px}
+  .slide p{color:#b9bec5;font-size:15px;margin-top:10px}
+  .ctrl{display:flex;gap:10px;margin-top:6px}
+  .ctrl button{width:48px;height:48px;border-radius:50%;border:1px solid var(--ink);background:transparent;color:var(--ink);font-size:18px;cursor:pointer}
+  .ctrl button:hover{background:var(--ink);color:var(--paper)}
+
+  /* pinned product scene */
+  .pin{height:300vh;position:relative}
+  .stick{position:sticky;top:0;height:100svh;display:grid;align-items:center;gap:36px;padding-top:70px}
+  @media (min-width:900px){.stick{grid-template-columns:.9fr 1.1fr}}
+  .stick h3{font-size:clamp(40px,5.6vw,80px);font-weight:800;letter-spacing:-.045em;line-height:.95}
+  .stick .body{font-size:clamp(17px,1.8vw,20px);color:var(--ink);opacity:.85;margin-top:20px;max-width:480px;min-height:5em}
+  .board{background:#101214;color:#f4f1ea;border-radius:26px;padding:22px;position:relative;min-height:440px;overflow:hidden}
+  .board .scene{position:absolute;inset:22px;opacity:0;transform:translateY(24px);transition:opacity .55s,transform .55s}
+  .board .scene.on{opacity:1;transform:none}
+  .scene h5{font-family:var(--mono);font-size:12px;color:#8d939b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid #262b31;font-size:15px}
+  .row:last-child{border-bottom:1px solid #262b31}
+  .row small{font-family:var(--mono);font-size:12px;color:#8d939b}
+  .done{color:var(--lime)}
+  .bigbar{height:10px;border-radius:99px;background:#262b31;overflow:hidden;margin-top:14px}
+  .bigbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--hot),var(--lime))}
+
+  /* repos */
+  .repos{display:grid;gap:12px;margin-top:48px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+  .repo{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--ink2);text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:transform .3s,border-color .3s}
+  .repo:hover{transform:translateY(-3px);border-color:var(--ink)}
+  .repo b{font-size:17px;letter-spacing:-.02em}
+  .repo p{color:var(--mute);font-size:14px;min-height:2.6em}
+  .repo .m{font-family:var(--mono);font-size:11.5px;color:var(--mute);display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+  .repo .m span:first-child{color:var(--ink)}
+
+  /* featured products */
+  .feat{display:grid;gap:20px;margin-top:56px}
+  @media (min-width:900px){.feat{grid-template-columns:1fr 1fr}}
+  .fp{border:1px solid var(--ink);border-radius:26px;padding:clamp(26px,3.5vw,44px);background:var(--ink2);position:relative;overflow:hidden}
+  .fp h3{font-size:clamp(40px,5vw,64px);font-weight:800;letter-spacing:-.045em}
+  .fp p{color:var(--ink);opacity:.85;margin-top:14px;font-size:17px;max-width:460px}
+  .fp .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+  .fp .tags span{font-family:var(--mono);font-size:12px;border:1px solid var(--line);padding:5px 10px;border-radius:999px}
+  .fp .go{display:inline-block;margin-top:26px;font-weight:600;text-decoration:none;border-bottom:2px solid var(--hot);padding-bottom:2px}
+  .fp .corner{position:absolute;right:-30px;top:-30px;width:180px;height:180px;border-radius:50%;background:var(--hot);opacity:.14}
+
+  /* product explainers: looping animations, pure CSS/SVG */
+  .exp-grid{display:grid;gap:18px;margin-top:48px;grid-template-columns:1fr}
+  @media (min-width:700px){.exp-grid{grid-template-columns:1fr 1fr}}
+  @media (min-width:1000px){.exp-grid{grid-template-columns:repeat(3,1fr)}}
+  .exp{border:1px solid var(--line);border-radius:22px;background:var(--ink2);overflow:hidden;display:flex;flex-direction:column}
+  .exp.off *{animation-play-state:paused!important}
+  .ex-stage{position:relative;height:200px;background:#0b0e13;color:#eef2f7;overflow:hidden}
+  .ex-cap{padding:18px 20px 22px}
+  .ex-cap h3{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:10px}
+  .ex-cap p{color:var(--ink);opacity:.8;font-size:15px;margin-top:6px}
+  .ex-tag{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;background:var(--lime);color:#111;display:inline-block}
+  .ex-tag.hot{background:var(--hot);color:#fff}
+  .ex-tag.mute{background:transparent;border:1px solid var(--line);color:var(--mute)}
+
+  /* 1 PaidToGov: a bill is scanned and the GST chip appears */
+  .s-bill .receipt{position:absolute;left:50%;top:50%;width:112px;height:150px;margin:-75px 0 0 -56px;background:#f4f1ea;border-radius:6px;padding:14px 12px;display:flex;flex-direction:column;gap:8px}
+  .s-bill .receipt i{display:block;height:6px;border-radius:3px;background:#c9c3b5}
+  .s-bill .receipt i.w{width:60%}
+  .s-bill .gst{margin-top:auto;font:600 12px var(--mono);color:#111;background:var(--lime);padding:6px 8px;border-radius:6px;animation:pop 4s ease infinite}
+  .s-bill .scan{position:absolute;left:50%;width:140px;margin-left:-70px;height:2px;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:scan 4s ease-in-out infinite}
+  @keyframes scan{0%{top:22%}50%{top:78%}100%{top:22%}}
+  @keyframes pop{0%,35%{opacity:0;transform:translateY(8px)}55%,100%{opacity:1;transform:none}}
+
+  /* 2 noteCode++: code types in, find highlights a match */
+  .s-editor .bar{position:absolute;top:0;left:0;right:0;height:32px;background:#151a22;display:flex;gap:6px;padding:7px 10px;font:11px var(--mono);color:#8b96a8}
+  .s-editor .bar span{padding:3px 8px;border-radius:6px}
+  .s-editor .bar span:first-child{background:#222a36;color:#eef2f7}
+  .s-editor .ln{position:absolute;left:18px;height:9px;border-radius:4px;background:#3a4556;width:0;animation:type 6s ease-in-out infinite}
+  .s-editor .ln.a{top:56px;--w:120px;background:#ff8fb1}
+  .s-editor .ln.b{top:82px;--w:170px}
+  .s-editor .ln.c{top:108px;--w:100px}
+  .s-editor .ln.d{top:134px;--w:140px}
+  @keyframes type{0%{width:0}50%,100%{width:var(--w)}}
+  .s-editor .hit{position:absolute;top:80px;left:118px;height:13px;width:44px;border-radius:4px;background:rgba(255,122,47,.6);opacity:0;animation:hit 6s infinite}
+  @keyframes hit{0%,55%{opacity:0}65%,90%{opacity:1}100%{opacity:0}}
+
+  /* 3 ccGenie: cards re-rank */
+  .s-rank .ex-r{position:absolute;left:20px;right:20px;height:48px;border-radius:10px;background:#1a212b;border:1px solid #262f3b;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font:13px var(--mono);color:#eef2f7}
+  .s-rank .ex-r b{color:var(--lime);font-weight:500}
+  .s-rank .r1{top:18px;animation:mv1 6s ease-in-out infinite}
+  .s-rank .r2{top:76px;animation:mv2 6s ease-in-out infinite}
+  .s-rank .r3{top:134px;animation:mv3 6s ease-in-out infinite}
+  @keyframes mv1{0%,30%{transform:none}45%,80%{transform:translateY(58px)}95%,100%{transform:none}}
+  @keyframes mv2{0%,30%{transform:none}45%,80%{transform:translateY(58px)}95%,100%{transform:none}}
+  @keyframes mv3{0%,30%{transform:none}45%,80%{transform:translateY(-116px)}95%,100%{transform:none}}
+
+  /* 4 MorphAM: a part is checked and flags appear */
+  .s-part svg{position:absolute;left:50%;top:50%;width:200px;margin:-65px 0 0 -100px}
+  .s-part .pt{position:absolute;width:12px;height:12px;border-radius:50%;border:2px solid var(--hot);margin:-6px 0 0 -6px;animation:ping 2.4s infinite}
+  .s-part .lbl{position:absolute;font:11px var(--mono);background:#1a212b;border:1px solid #2b3442;padding:4px 8px;border-radius:6px;color:#ffc857;opacity:0;animation:lbl 6s infinite}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,74,28,.6)}100%{box-shadow:0 0 0 14px rgba(255,74,28,0)}}
+  @keyframes lbl{0%,20%{opacity:0}35%,85%{opacity:1}100%{opacity:0}}
+
+  /* 5 rCheta: gauge needle moves with sample readings */
+  .s-gauge svg{position:absolute;left:50%;top:50%;width:220px;margin:-70px 0 0 -110px}
+  .needle{transform-origin:100px 100px;transform-box:view-box;animation:needle 5s ease-in-out infinite}
+  @keyframes needle{0%{transform:rotate(-60deg)}30%{transform:rotate(20deg)}55%{transform:rotate(-10deg)}80%{transform:rotate(45deg)}100%{transform:rotate(-60deg)}}
+  .s-gauge .cap{position:absolute;left:0;right:0;bottom:10px;text-align:center;font:11px var(--mono);color:#8b96a8}
+
+  /* 6 Sabha: context notes link into one thread */
+  .s-nodes svg{position:absolute;inset:0;width:100%;height:100%}
+  .s-nodes .ln-s{stroke:#2b3442;stroke-width:1.5}
+  .s-nodes .nd{fill:#1a212b;stroke:#3a4556;stroke-width:1.5}
+  .s-nodes text{fill:#8b96a8;font:10px var(--mono)}
+  /* stages for the remaining explainers */
+  .s-score{display:flex;align-items:flex-end;justify-content:center;gap:16px;padding-bottom:26px}
+  .s-score i{display:block;width:26px;height:0;border-radius:6px 6px 0 0;background:linear-gradient(#c6f432,#3d5a0c);animation:grow 4s ease-in-out infinite}
+  @keyframes grow{0%{height:0}45%,100%{height:var(--h)}}
+  .s-swing svg{position:absolute;inset:0;width:100%;height:100%}
+  .s-swing .pend{transform-origin:120px 10px;transform-box:view-box;animation:swing 3s ease-in-out infinite alternate}
+  @keyframes swing{from{transform:rotate(-35deg)}to{transform:rotate(35deg)}}
+  .s-layers .lay{position:absolute;left:50%;width:130px;height:24px;margin-left:-65px;border-radius:8px;background:#2b3442;border:1px solid #3a4556;animation:drop 4.5s ease-in-out infinite}
+  .s-layers .l1{top:44px}.s-layers .l2{top:82px;animation-delay:.5s}.s-layers .l3{top:120px;background:var(--lime);animation-delay:1s}
+  @keyframes drop{0%{transform:translateY(-50px);opacity:0}30%,85%{transform:none;opacity:1}100%{transform:translateY(-50px);opacity:0}}
+  .s-lane .ln0{position:absolute;left:24px;right:24px;top:50%;height:2px;background:#2b3442}
+  .s-lane .ln0::after{content:"";position:absolute;left:0;top:0;height:2px;width:0;background:var(--lime);animation:fill 5s ease-in-out infinite}
+  @keyframes fill{0%{width:0}80%,100%{width:100%}}
+  .s-lane .ms{position:absolute;top:calc(50% - 6px);width:12px;height:12px;border-radius:50%;background:#2b3442;margin-left:-6px;animation:lit 5s infinite}
+  .s-lane .m1{left:24px}.s-lane .m2{left:33%;animation-delay:.8s}.s-lane .m3{left:66%;animation-delay:1.6s}.s-lane .m4{left:calc(100% - 24px);animation-delay:2.4s}
+  @keyframes lit{0%{background:#2b3442}20%,100%{background:var(--lime)}}
+  .s-chat .bub{position:absolute;padding:8px 12px;border-radius:12px;font:12px var(--mono);max-width:72%;opacity:0;animation:bub 7s infinite}
+  .s-chat .in{left:16px;background:#1f2631;color:#eef2f7}
+  .s-chat .out{right:16px;background:var(--lime);color:#111}
+  .s-chat .b1{top:20px}.s-chat .b2{top:74px;animation-delay:1.4s}.s-chat .b3{top:128px;animation-delay:2.8s}
+  @keyframes bub{0%{opacity:0;transform:translateY(8px)}6%,82%{opacity:1;transform:none}92%,100%{opacity:0}}
+  .s-radar .disc{position:absolute;left:50%;top:50%;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 29px,#1f2631 29px 30px);overflow:hidden}
+  .s-radar .disc::before{content:"";position:absolute;inset:0;background:conic-gradient(from 0deg,rgba(198,244,50,.45),transparent 28%);animation:sweep 4s linear infinite}
+  .s-radar .disc i{position:absolute;width:8px;height:8px;border-radius:50%;background:#ff4a1c;animation:blip 4s infinite}
+  @keyframes sweep{to{transform:rotate(360deg)}}
+  @keyframes blip{0%,40%{opacity:0}50%,100%{opacity:1}}
+  .s-invite .inv{position:absolute;left:50%;top:20px;width:120px;height:120px;margin-left:-60px;background:#f4f1ea;color:#111;border-radius:6px;padding:12px;font:600 12px var(--display);display:flex;flex-direction:column;justify-content:space-between;animation:rise 4.5s ease-in-out infinite}
+  .s-invite .env{position:absolute;left:50%;bottom:0;width:170px;height:90px;margin-left:-85px;background:#1f2631;border-radius:10px 10px 0 0;z-index:2}
+  @keyframes rise{0%,10%{transform:translateY(60px)}50%,80%{transform:translateY(0)}100%{transform:translateY(60px)}}
+  .s-dom .dr{position:absolute;left:20px;right:20px;height:32px;border-radius:9px;background:#1a212b;border:1px solid #262f3b;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font:12px var(--mono);color:#eef2f7}
+  .s-dom .dr1{top:22px}.s-dom .dr2{top:66px}.s-dom .dr3{top:110px}.s-dom .dr4{top:154px}
+  .s-dom .dot{width:9px;height:9px;border-radius:50%;background:var(--lime)}
+  .s-dom .dot.bad{background:#ff4a1c;animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.2}}
+  .s-fix .blk{position:absolute;height:34px;border-radius:8px;background:#2b3442;animation:snap 6s ease-in-out infinite}
+  @keyframes snap{0%,12%{transform:translate(var(--mx),var(--my)) rotate(var(--mr))}50%,88%{transform:none}100%{transform:translate(var(--mx),var(--my)) rotate(var(--mr))}}
+  .s-code .cl{position:absolute;left:20px;height:10px;border-radius:5px;background:#3a4556}
+  .s-code .flag{position:absolute;right:20px;width:12px;height:12px;border-radius:50%;animation:ok 8s infinite}
+  @keyframes ok{0%,40%{background:#ff4a1c}60%,100%{background:var(--lime)}}
+
+  /* pipeline -> explainer jump */
+  .pipe .card.jump{cursor:pointer}
+  .pipe .card.jump:focus-visible{outline:2px solid var(--hot);outline-offset:3px}
+  .exp.flash{outline:2px solid var(--hot);outline-offset:6px;transition:outline-color .3s}
+  .back-btn{position:fixed;left:50%;bottom:18px;z-index:50;transform:translate(-50%,160%);background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:12px 18px;font:600 14px var(--display);box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer;transition:transform .4s cubic-bezier(.2,.75,.1,1);white-space:nowrap}
+  .back-btn.show{transform:translate(-50%,0)}
+
+  footer{padding:70px 0 50px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}
+  footer .row2{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  footer a{color:var(--ink);text-decoration:none}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.rv,.hero h1 .ch{opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top" id="top">
+  <a class="brand" href="#hero">yogesh<em>/</em>products</a>
+  <nav class="links">
+    <a href="#pipeline">Pipeline</a>
+    <a href="#shipped">Shipped</a>
+    <a href="#featured">Featured</a>
+    <a href="#repos">Repos</a>
+    <button class="switch" id="themeSwitch" type="button" aria-label="Switch to bright view">
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+    </button>
+    <button class="keep pill" type="button" data-hire>Hire me</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero" style="padding-bottom:0">
+  <div class="wrap">
+    <p class="eyebrow"><b>●</b> Solo founder · Pune · status as of Oct 18, 2026</p>
+    <h1 style="margin-top:28px" id="hl">
+      <span class="ln">Ideas in,</span>
+      <span class="ln">products <span class="hot">out.</span></span>
+    </h1>
+    <div class="hero-foot">
+      <p>One person running the whole path: product calls, the build, testing, store submission and paperwork. <span>One app is live on Google Play. Several more are in build right now.</span></p>
+      <div class="scrollcue"><i></i> scroll down to see the pipeline</div>
+      <a class="pill" href="#pipeline" style="justify-self:start">See what's in build →</a>
+    </div>
+  </div>
+  <div class="strip" style="margin-top:70px">
+    <div class="wrap">
+      <div class="stat"><b data-count="21">0</b><span>public repos on GitHub</span></div>
+      <div class="stat"><b data-count="1">0</b><span>app live on Google Play</span></div>
+      <div class="stat"><b data-count="34">0</b><span>★ on noteCode++, open source</span></div>
+      <div class="stat"><b data-count="10">0</b><span>years in process and quality engineering</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>01</b> &nbsp;Pipeline</p>
+    <h2 class="rv">Where every product sits, right now.</h2>
+    <p class="rv" style="color:var(--mute);margin-top:18px;max-width:620px">Each card is a product. The line under it is the next milestone. Columns move as work moves. Source: a shared task board, updated daily.</p>
+
+    <div class="pipe">
+      <div class="col rv"><h4>Planned <b data-n="5">0</b></h4>
+        <div class="card mute"><div class="nm">Lagna Patrika</div><div class="st">Animated wedding invite PWA</div><div class="nx">Next: v1 with RSVP</div></div>
+        <div class="card mute"><div class="nm">Auto Service Assistant</div><div class="st">Voice/chat copilot for service bays</div><div class="nx">Next: local RAG v0 demo</div></div>
+        <div class="card mute"><div class="nm">D-Mon</div><div class="st">Domain monitoring PWA</div><div class="nx">Next: universal domain probes</div></div>
+        <div class="card mute"><div class="nm">Fix My UI</div><div class="st">Expert UI/UX fixes for AI-built apps</div><div class="nx">Next: launch the service</div></div>
+        <div class="card mute"><div class="nm">SonarQuest</div><div class="st">SonarQube alternative</div><div class="nx">Paused on analysis depth</div></div>
+      </div>
+
+      <div class="col rv"><h4>In progress <b>6</b></h4>
+        <div class="card"><div class="nm">ccGenie</div><div class="st">Card rewards advisor · Android</div><div class="nx">Next: store declarations, then v1 release</div><span class="bd">Release in progress</span></div>
+        <div class="card"><div class="nm">B-Score</div><div class="st">Project scoring web app</div><div class="nx">Next: payments via Razorpay</div><span class="bd">Moving to Vercel</span></div>
+        <div class="card"><div class="nm">rCheta</div><div class="st">Machine monitoring SaaS</div><div class="nx">Next: product spec</div><span class="bd">Collector spike</span></div>
+        <div class="card"><div class="nm">Dunehook</div><div class="st">Android grappling game</div><div class="nx">Next: match feel and audio</div><span class="bd">Prototype</span></div>
+        <div class="card"><div class="nm">Sabha</div><div class="st">Continuity workbench</div><div class="nx">Next: live model providers</div><span class="bd">Build</span></div>
+        <div class="card"><div class="nm">LM Builder for Windows</div><div class="st">Desktop app, packaged installer</div><div class="nx">Next: packaged .exe</div><span class="bd">Build</span></div>
+      </div>
+
+      <div class="col rv"><h4>Testing <b data-n="4">0</b></h4>
+        <div class="card hot"><div class="nm">MorphAM</div><div class="st">DfAM API · first outreach</div><div class="nx">Next: market read from GFH Additive</div><span class="bd">Outreach</span></div>
+        <div class="card"><div class="nm">Launchlane</div><div class="st">Launch planning, store-aware</div><div class="nx">Next: verify one live store connector</div><span class="bd">Private alpha</span></div>
+        <div class="card"><div class="nm">Relay</div><div class="st">Drafted messaging, Android</div><div class="nx">Next: verify email draft flow</div><span class="bd">Alpha</span></div>
+        <div class="card"><div class="nm">Firstlight</div><div class="st">Opportunity discovery</div><div class="nx">Next: local test before signup</div><span class="bd">Beta build</span></div>
+      </div>
+
+      <div class="col rv"><h4>Live <b data-n="2">0</b></h4>
+        <div class="card hot"><div class="nm">PaidToGov</div><div class="st">GST expense tracker · Android</div><div class="nx">Live on Google Play (India), Oct 2026</div><span class="bd">Live</span></div>
+        <div class="card"><div class="nm">noteCode++</div><div class="st">Notepad++ for Android · open source</div><div class="nx">APK on GitHub · 34★ · Apache 2.0</div><span class="bd">Open source</span></div>
+      </div>
+    </div>
+    <p class="legend rv">Stages are the current state of each product. Done items live in the Shipped section below.</p>
+  </div>
+</section>
+
+<!-- SHIPPED -->
+<section id="shipped" style="padding-top:60px">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>02</b> &nbsp;Latest milestones</p>
+    <h2 class="rv">Shipped, merged, published.</h2>
+    <div class="track" id="track">
+      <article class="slide"><div><div class="d">OCT 15, 2026</div><h3>PaidToGov on Google Play production</h3><p>Released to India after closed testing with 12 testers over 14 days.</p></div><div class="d" style="color:#8d939b">Android · Play Console</div></article>
+      <article class="slide"><div><div class="d">OCT 15, 2026</div><h3>Merged into text-to-cad</h3><p>PR #265 landed in release 0.4.21 after three rounds of maintainer review.</p></div><div class="d" style="color:#8d939b">Open source · Python</div></article>
+      <article class="slide"><div><div class="d">OCT 7, 2026</div><h3>ccGenie privacy policy published</h3><p>Privacy, terms and data deletion page live for the Play listing.</p></div><div class="d" style="color:#8d939b">Compliance · GitHub Pages</div></article>
+      <article class="slide"><div><div class="d">SEP 27, 2026</div><h3>noteCode++ gets a Termux runner</h3><p>Run npm and pnpm workflows from inside the editor, with an embedded console and an interactive session mode.</p></div><div class="d" style="color:#8d939b">Kotlin · Jetpack Compose</div></article>
+      <article class="slide"><div><div class="d">SEP 27, 2026</div><h3>MorphAM privacy page</h3><p>Published and states uploaded geometry is deleted after analysis.</p></div><div class="d" style="color:#8d939b">Compliance · GitHub Pages</div></article>
+    </div>
+    <div class="ctrl"><button id="prev" aria-label="previous">←</button><button id="next" aria-label="next">→</button></div>
+  </div>
+</section>
+
+<!-- PINNED SCENE -->
+<section id="scene" style="padding:0">
+  <div class="pin" id="pin">
+    <div class="stick wrap">
+      <div>
+        <p class="eyebrow" id="sLabel">Scene 01 / 03</p>
+        <h3 id="sTitle">Built on the path to paid.</h3>
+        <p class="body" id="sBody">Each product gets the boring launch work done too: signing, store declarations, privacy policy, refund terms.</p>
+      </div>
+      <div class="board">
+        <div class="scene on" data-s="0">
+          <h5>PaidToGov · release track</h5>
+          <div class="row"><span>Bill capture with on-device OCR</span><span class="done">✓</span></div>
+          <div class="row"><span>Closed testing, 12 testers × 14 days</span><span class="done">✓</span></div>
+          <div class="row"><span>Google Play production (India)</span><span class="done">✓</span></div>
+          <div class="row"><span>Next: GST refund business path</span><small>planned</small></div>
+        </div>
+        <div class="scene" data-s="1">
+          <h5>ccGenie · launch checklist</h5>
+          <div class="row"><span>Google sign-in on the Play build</span><span class="done">✓</span></div>
+          <div class="row"><span>RevenueCat test subscriptions</span><span class="done">✓</span></div>
+          <div class="row"><span>Play declarations, sign-in and ads</span><small>in progress</small></div>
+          <div class="row"><span>Backend on Google Cloud Run</span><small>queued</small></div>
+          <div class="bigbar"><i id="bar1"></i></div>
+        </div>
+        <div class="scene" data-s="2">
+          <h5>MorphAM · validation</h5>
+          <div class="row"><span>text-to-cad PR #265 merged</span><span class="done">✓</span></div>
+          <div class="row"><span>Outreach to Sculpteo, JLC3DP, Jawstec, GFH</span><small>sending</small></div>
+          <div class="row"><span>Brand consolidation under one domain</span><small>queued</small></div>
+          <div class="row"><span>Docker evaluation run</span><small>in progress</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section id="featured">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>03</b> &nbsp;Featured</p>
+    <h2 class="rv">Two products worth a closer look.</h2>
+    <div class="feat">
+      <article class="fp rv">
+        <div class="corner"></div>
+        <p class="eyebrow">Live · Android</p>
+        <h3 style="margin-top:14px">PaidToGov</h3>
+        <p>A GST expense tracker. Capture bills with on-device OCR, or estimate tax with the GST slabs. Built with Kotlin, Compose and Room.</p>
+        <div class="tags"><span>Kotlin</span><span>Jetpack Compose</span><span>Room</span><span>ML Kit OCR</span></div>
+        <a class="go" href="https://knewnothing-git.github.io/paidtogov-privacy/">Privacy policy ↗</a>
+      </article>
+      <article class="fp rv">
+        <div class="corner"></div>
+        <p class="eyebrow">Open source · Android</p>
+        <h3 style="margin-top:14px">noteCode++</h3>
+        <p>Notepad++ for Android. Multi-tab editing, 12+ languages, regex find and replace, eight themes, and a Node and pnpm runner. Offline, no account, no ads.</p>
+        <div class="tags"><span>Kotlin</span><span>Compose</span><span>Apache 2.0</span><span>34 ★</span></div>
+        <a class="go" href="https://github.com/knewnothing-git/noteCode_pp">Source & APK ↗</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLAINERS -->
+<section id="explain" style="padding-top:40px">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>03b</b> &nbsp;How each one works</p>
+    <h2 class="rv">Every product, what it does.</h2>
+    <div class="exp-grid">
+
+      <article class="exp rv">
+        <div class="ex-stage s-bill" aria-hidden="true">
+          <div class="receipt"><i></i><i></i><i class="w"></i><i></i><i class="w"></i><div class="gst">GST · ₹ 180</div></div>
+          <div class="scan"></div>
+        </div>
+        <div class="ex-cap"><span class="ex-tag hot">Live</span><h3>PaidToGov</h3><p>Scan a bill and the GST is split out for you. Live on Google Play in India.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-editor" aria-hidden="true">
+          <div class="bar"><span>app.ts</span><span>index.html</span></div>
+          <div class="ln a" style="--w:120px"></div><div class="ln b" style="--w:170px"></div><div class="ln c" style="--w:100px"></div><div class="ln d" style="--w:140px"></div>
+          <div class="hit"></div>
+        </div>
+        <div class="ex-cap"><span class="ex-tag">Open source</span><h3>noteCode++</h3><p>A Notepad++-style editor for Android, with regex find and a Termux runner.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-rank" aria-hidden="true">
+          <div class="ex-r r1">Travel <b>#1</b></div>
+          <div class="ex-r r2">Cashback <b>#2</b></div>
+          <div class="ex-r r3">Fuel <b>#3</b></div>
+        </div>
+        <div class="ex-cap"><span class="ex-tag">Release in progress</span><h3>ccGenie</h3><p>Ranks credit cards by reward value for each country.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-part" aria-hidden="true">
+          <svg viewBox="0 0 200 130"><polygon points="20,100 90,30 180,52 110,118" fill="#2a3340" stroke="#8b96a8" stroke-width="1.5"/><polygon points="90,30 180,52 180,80 90,58" fill="#38424f" stroke="#8b96a8" stroke-width="1.5"/></svg>
+          <span class="pt" style="left:38%;top:44%"></span><span class="lbl" style="left:46%;top:22%">wall too thin</span>
+          <span class="pt" style="left:70%;top:60%;animation-delay:1.2s"></span><span class="lbl" style="left:54%;top:76%;animation-delay:1.5s">overhang</span>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">Testing</span><h3>MorphAM</h3><p>Checks a part design for additive manufacturing issues before it is printed.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-gauge" aria-hidden="true">
+          <svg viewBox="0 0 200 120">
+            <path d="M20,100 A80,80 0 0 1 180,100" stroke="#262f3b" stroke-width="12" fill="none"/>
+            <path d="M20,100 A80,80 0 0 1 180,100" stroke="#c6f432" stroke-width="12" fill="none" stroke-dasharray="150 251"/>
+            <line class="needle" x1="100" y1="100" x2="100" y2="34" stroke="#ff4a1c" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="100" cy="100" r="6" fill="#ff4a1c"/>
+          </svg>
+          <div class="cap">sample readings</div>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">In build</span><h3>rCheta</h3><p>Live monitoring for CNC and automated machines.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-nodes" aria-hidden="true">
+          <svg viewBox="0 0 240 140">
+            <line class="ln-s" x1="30" y1="70" x2="120" y2="30"/><line class="ln-s" x1="120" y1="30" x2="210" y2="70"/>
+            <line class="ln-s" x1="210" y1="70" x2="120" y2="110"/><line class="ln-s" x1="120" y1="110" x2="30" y2="70"/>
+            <circle class="nd" cx="30" cy="70" r="8"/><text x="18" y="92">notes</text>
+            <circle class="nd" cx="120" cy="30" r="8"/><text x="100" y="18">repo</text>
+            <circle class="nd" cx="210" cy="70" r="8"/><text x="192" y="92">chat</text>
+            <circle class="nd" cx="120" cy="110" r="8"/><text x="100" y="134">task</text>
+            <circle r="3.5" fill="#c6f432"><animateMotion dur="6s" repeatCount="indefinite" path="M30,70 L120,30 L210,70 L120,110 Z"/></circle>
+            <circle r="3.5" fill="#ff4a1c"><animateMotion dur="6s" begin="3s" repeatCount="indefinite" path="M30,70 L120,30 L210,70 L120,110 Z"/></circle>
+          </svg>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">In build</span><h3>Sabha</h3><p>Keeps context across sessions and tools, so work picks up where it stopped.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-score" aria-hidden="true"><i style="--h:70px"></i><i style="--h:124px"></i><i style="--h:96px"></i><i style="--h:150px"></i></div>
+        <div class="ex-cap"><span class="ex-tag">In build</span><h3>B-Score</h3><p>Scores builder projects in one web app. Moving to Vercel.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-swing" aria-hidden="true">
+          <svg viewBox="0 0 240 200"><g class="pend"><line x1="120" y1="10" x2="120" y2="150" stroke="#8b96a8" stroke-width="2"/><circle cx="120" cy="158" r="12" fill="#ff4a1c"/></g></svg>
+        </div>
+        <div class="ex-cap"><span class="ex-tag">In build</span><h3>Dunehook</h3><p>An Android grappling game, in prototype.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-layers" aria-hidden="true"><i class="lay l1"></i><i class="lay l2"></i><i class="lay l3"></i></div>
+        <div class="ex-cap"><span class="ex-tag">In build</span><h3>LM Builder for Windows</h3><p>A Windows desktop app that rebuilds a macOS model builder.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-lane" aria-hidden="true"><div class="ln0"></div><span class="ms m1"></span><span class="ms m2"></span><span class="ms m3"></span><span class="ms m4"></span></div>
+        <div class="ex-cap"><span class="ex-tag mute">Private alpha</span><h3>Launchlane</h3><p>Plans an app-store launch, one step at a time.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-chat" aria-hidden="true"><div class="bub in b1">Can you draft a reply?</div><div class="bub out b2">Sure, here's a draft.</div><div class="bub in b3">Draft ready for review.</div></div>
+        <div class="ex-cap"><span class="ex-tag mute">Alpha</span><h3>Relay</h3><p>Drafts replies on Android, with AI.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-radar" aria-hidden="true">
+          <div class="disc"><i style="top:50px;left:120px"></i><i style="top:112px;left:52px;animation-delay:2s"></i><i style="top:96px;left:140px;animation-delay:3.2s"></i></div>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">Beta</span><h3>Firstlight</h3><p>Opportunity discovery, in beta before public signup.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-invite" aria-hidden="true"><div class="inv"><b>Save the date</b><span>RSVP ✓</span></div><div class="env"></div></div>
+        <div class="ex-cap"><span class="ex-tag mute">Planned</span><h3>Lagna Patrika</h3><p>Animated wedding invitation with RSVP.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-chat" aria-hidden="true"><div class="bub in b1">Repair question?</div><div class="bub out b2">Step 1: check the connector.</div><div class="bub in b3">Logged to the job card.</div></div>
+        <div class="ex-cap"><span class="ex-tag mute">Planned</span><h3>Auto Service Assistant</h3><p>Answers repair questions for technicians in the service bay.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-dom" aria-hidden="true">
+          <div class="dr dr1">example.com <span class="dot"></span></div>
+          <div class="dr dr2">shop.example <span class="dot"></span></div>
+          <div class="dr dr3">app.example <span class="dot bad"></span></div>
+          <div class="dr dr4">blog.example <span class="dot"></span></div>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">Planned</span><h3>D-Mon</h3><p>One dashboard for domain status across registrars.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-fix" aria-hidden="true">
+          <i class="blk" style="top:26px;left:5%;width:42%;--mx:-14px;--my:10px;--mr:-4deg"></i>
+          <i class="blk" style="top:26px;left:53%;width:42%;--mx:18px;--my:-8px;--mr:5deg"></i>
+          <i class="blk" style="top:80px;left:5%;width:90%;--mx:-8px;--my:14px;--mr:2deg"></i>
+          <i class="blk" style="top:134px;left:5%;width:60%;--mx:12px;--my:-10px;--mr:-3deg"></i>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">Planned</span><h3>Fix My UI</h3><p>Expert UI and UX fixes for apps built with AI.</p></div>
+      </article>
+
+      <article class="exp rv">
+        <div class="ex-stage s-code" aria-hidden="true">
+          <i class="cl" style="top:30px;width:55%"></i><i class="flag" style="top:29px;animation-delay:0s"></i>
+          <i class="cl" style="top:70px;width:72%"></i><i class="flag" style="top:69px;animation-delay:1.6s"></i>
+          <i class="cl" style="top:110px;width:40%"></i><i class="flag" style="top:109px;animation-delay:3.2s"></i>
+          <i class="cl" style="top:150px;width:62%"></i><i class="flag" style="top:149px;animation-delay:4.8s"></i>
+        </div>
+        <div class="ex-cap"><span class="ex-tag mute">Paused</span><h3>SonarQuest</h3><p>A code-quality checker, an alternative to SonarQube. Paused on analysis depth.</p></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- REPOS -->
+<section id="repos" style="padding-top:40px">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>04</b> &nbsp;All public repos · 20 of 21 shown</p>
+    <h2 class="rv">Everything I've put in the open.</h2>
+    <div class="repos" id="repoGrid"></div>
+  </div>
+</section>
+
+<section id="contact" style="padding-top:60px">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>05</b> &nbsp;Contact</p>
+    <h2>Need something built, shipped, or rescued?</h2>
+    <p style="margin-top:20px;color:var(--mute);max-width:560px">Stuck between a working prototype and a store listing? Let's talk.</p>
+    <p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="pill" type="button" data-hire>Hire me →</button> <a class="pill" style="background:transparent;color:var(--ink);border:1px solid var(--ink)" href="https://github.com/knewnothing-git" target="_blank" rel="noopener">GitHub ↗</a></p>
+    <p style="margin-top:18px;color:var(--mute);font-size:15px">Or email directly: <a href="mailto:devsideofmine@gmail.com" style="color:var(--ink)">devsideofmine@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- HIRE MODAL -->
+<div class="modal" id="hire" role="dialog" aria-modal="true" aria-labelledby="hireTitle">
+  <div class="sheet">
+    <button class="x" type="button" data-close aria-label="Close">×</button>
+    <p class="eyebrow">Hire me · 60 seconds</p>
+    <h3 id="hireTitle">Tell me what you need.</h3>
+    <p class="sub">Six quick questions. Your answers go straight to my inbox.</p>
+    <div class="prog"><i id="hireProg"></i></div>
+    <form id="hireForm" novalidate>
+      <div class="q on" data-q="0">
+        <label class="lbl">What do you need?</label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="need" value="Build a new app"> Build a new app</label>
+          <label class="opt"><input type="radio" name="need" value="Ship an app to the Play Store"> Ship an app to the Play Store</label>
+          <label class="opt"><input type="radio" name="need" value="Fix or rescue an app"> Fix or rescue an app</label>
+          <label class="opt"><input type="radio" name="need" value="Landing page or portfolio site"> Landing page or portfolio site</label>
+          <label class="opt"><input type="radio" name="need" value="Something else"> Something else</label>
+        </div>
+      </div>
+      <div class="q" data-q="1">
+        <label class="lbl">What kind of product?</label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="platform" value="Android app"> Android app</label>
+          <label class="opt"><input type="radio" name="platform" value="Web app or PWA"> Web app or PWA</label>
+          <label class="opt"><input type="radio" name="platform" value="Both Android and web"> Both Android and web</label>
+          <label class="opt"><input type="radio" name="platform" value="Not sure yet"> Not sure yet</label>
+        </div>
+      </div>
+      <div class="q" data-q="2">
+        <label class="lbl">Where is it today?</label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="stage" value="Just an idea"> Just an idea</label>
+          <label class="opt"><input type="radio" name="stage" value="A prototype or demo"> A prototype or demo</label>
+          <label class="opt"><input type="radio" name="stage" value="Half-built, stuck somewhere"> Half-built, stuck somewhere</label>
+          <label class="opt"><input type="radio" name="stage" value="Built, needs launch work"> Built, needs launch work</label>
+        </div>
+      </div>
+      <div class="q" data-q="3">
+        <label class="lbl">When do you need it?</label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="timeline" value="Within 2 weeks"> Within 2 weeks</label>
+          <label class="opt"><input type="radio" name="timeline" value="1 to 2 months"> 1 to 2 months</label>
+          <label class="opt"><input type="radio" name="timeline" value="Flexible"> Flexible</label>
+        </div>
+      </div>
+      <div class="q" data-q="4">
+        <label class="lbl">Roughly what budget?</label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="budget" value="Under ₹50k"> Under ₹50k</label>
+          <label class="opt"><input type="radio" name="budget" value="₹50k to ₹2L"> ₹50k to ₹2L</label>
+          <label class="opt"><input type="radio" name="budget" value="Over ₹2L"> Over ₹2L</label>
+          <label class="opt"><input type="radio" name="budget" value="Prefer to discuss"> Prefer to discuss</label>
+        </div>
+      </div>
+      <div class="q" data-q="5">
+        <label class="lbl">Last step: how do I reach you?</label>
+        <div class="field">
+          <input name="name" placeholder="Your name" autocomplete="name" required>
+          <input name="email" type="email" placeholder="Your email" autocomplete="email" required>
+          <input name="company" placeholder="Company (optional)" autocomplete="organization">
+          <textarea name="details" placeholder="Anything else? (optional) – a link, a rough idea, a deadline"></textarea>
+        </div>
+      </div>
+      <div class="err" id="hireErr"></div>
+      <div class="nav-row">
+        <button class="btn ghost" type="button" id="hireBack">Back</button>
+        <button class="btn" type="button" id="hireNext">Next</button>
+      </div>
+    </form>
+    <div class="thanks" id="hireThanks">
+      <h3>Sent. Thank you.</h3>
+      <p class="sub" style="margin-top:12px">I'll reply to your email within two working days.</p>
+    </div>
+    <p class="fine">Prefer email? <a href="mailto:devsideofmine@gmail.com">devsideofmine@gmail.com</a> · Your details are used only to reply to you.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap row2">
+    <span>© 2026 Yogesh · Pune, India</span>
+    <span>Status is updated from a live task board.</span>
+  </div>
+</footer>
+
+<button class="back-btn" id="backBtn" type="button">↑ Back to where you were</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Bright / dark view switch: follows the device by default, remembers the choice
+  const root = document.documentElement;
+  const sw = document.getElementById('themeSwitch');
+  const systemDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const applyTheme = (mode)=>{
+    root.setAttribute('data-theme', mode);
+    const bright = mode === 'light';
+    sw.setAttribute('aria-label', bright ? 'Switch to dark view' : 'Switch to bright view');
+    sw.setAttribute('title', bright ? 'Dark view' : 'Bright view');
+  };
+  let saved = null;
+  try { saved = localStorage.getItem('portfolio-theme'); } catch(e) {}
+  applyTheme(saved === 'light' || saved === 'dark' ? saved : (systemDark ? 'dark' : 'light'));
+  sw.addEventListener('click', ()=>{
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    try { localStorage.setItem('portfolio-theme', next); } catch(e) {}
+  });
+
+  // Hire me: 6-step requirement form, sent to a form endpoint, with a mailto fallback
+  const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
+  const ACCESS_KEY = '76d9ffc4-400c-4693-9029-b19264e3d1ca'; // Web3Forms public access key (safe in client code)
+  const MY_EMAIL = 'devsideofmine@gmail.com';
+  const modal = document.getElementById('hire');
+  const form = document.getElementById('hireForm');
+  const qs = [...form.querySelectorAll('.q')];
+  const prog = document.getElementById('hireProg');
+  const err = document.getElementById('hireErr');
+  const nextBtn = document.getElementById('hireNext');
+  const backBtn = document.getElementById('hireBack');
+  let cur = 0;
+  const showQ = (i)=>{
+    cur = i;
+    qs.forEach((q,j)=>q.classList.toggle('on', j===i));
+    prog.style.width = ((i)/(qs.length))*100 + '%';
+    backBtn.style.visibility = i===0 ? 'hidden' : 'visible';
+    nextBtn.textContent = i===qs.length-1 ? 'Send to Yogesh' : 'Next';
+    err.textContent = '';
+  };
+  const openHire = ()=>{ modal.classList.add('open'); document.getElementById('hireThanks').classList.remove('on'); form.style.display=''; showQ(0); setTimeout(()=>modal.querySelector('input,button')?.focus(),50); };
+  const closeHire = ()=>modal.classList.remove('open');
+  document.querySelectorAll('[data-hire]').forEach(b=>b.addEventListener('click', openHire));
+  modal.querySelector('[data-close]').addEventListener('click', closeHire);
+  modal.addEventListener('click', e=>{ if(e.target===modal) closeHire(); });
+  addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.classList.contains('open')) closeHire(); });
+  const answered = (i)=>{
+    const q = qs[i];
+    if(q.querySelector('input[type=radio]')) return !!q.querySelector('input:checked');
+    return true;
+  };
+  backBtn.addEventListener('click', ()=>{ if(cur>0) showQ(cur-1); });
+  const collect = ()=>{
+    const fd = new FormData(form);
+    const out = {};
+    ['need','platform','stage','timeline','budget','name','email','company','details'].forEach(k=>out[k]=(fd.get(k)||'').toString().trim());
+    return out;
+  };
+  const toMailBody = (d)=>[
+    `Name: ${d.name}`, `Email: ${d.email}`, `Company: ${d.company || '-'}`,
+    `What they need: ${d.need}`, `Product: ${d.platform}`, `Stage: ${d.stage}`,
+    `Timeline: ${d.timeline}`, `Budget: ${d.budget}`, '', `Details:\n${d.details || '-'}`
+  ].join('\n');
+  nextBtn.addEventListener('click', async ()=>{
+    if(!answered(cur)){ err.textContent = 'Pick one option to continue.'; return; }
+    if(cur < qs.length-1){ showQ(cur+1); return; }
+    const d = collect();
+    if(!d.name || !/^\S+@\S+\.\S+$/.test(d.email)){ err.textContent = 'Add your name and a valid email so I can reply.'; return; }
+    nextBtn.disabled = true; nextBtn.textContent = 'Sending…';
+    try{
+      if(FORM_ENDPOINT){
+        const res = await fetch(FORM_ENDPOINT, {method:'POST', headers:{'Accept':'application/json','Content-Type':'application/json'}, body:JSON.stringify({...d, access_key: ACCESS_KEY, _subject:`Hire request: ${d.need} (${d.name})`, message: toMailBody(d)})});
+        if(!res.ok) throw new Error('send failed');
+      } else {
+        // No endpoint set yet: open a pre-filled email to me instead
+        location.href = `mailto:${MY_EMAIL}?subject=${encodeURIComponent('Hire request: '+d.need+' ('+d.name+')')}&body=${encodeURIComponent(toMailBody(d))}`;
+      }
+      form.style.display='none';
+      document.getElementById('hireThanks').classList.add('on');
+      prog.style.width='100%';
+    }catch(_){
+      err.textContent = 'Could not send. Please email devsideofmine@gmail.com directly.';
+    }finally{
+      nextBtn.disabled = false; nextBtn.textContent = 'Send to Yogesh';
+    }
+  });
+
+  // Give each explainer an id from its title, then link pipeline cards to them
+  document.querySelectorAll('.exp').forEach(el=>{
+    const h = el.querySelector('h3');
+    if(h) el.id = 'x-' + h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  });
+  const jumpBackBtn = document.getElementById('backBtn');
+  let savedY = null;
+  const jumpTo = (id)=>{
+    const t = document.getElementById(id);
+    if(!t) return;
+    savedY = scrollY;
+    t.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'});
+    t.classList.add('flash');
+    setTimeout(()=>t.classList.remove('flash'), 1800);
+    jumpBackBtn.classList.add('show');
+  };
+  jumpBackBtn.addEventListener('click', ()=>{
+    window.scrollTo({top: savedY ?? 0, behavior: reduce ? 'auto' : 'smooth'});
+    jumpBackBtn.classList.remove('show');
+  });
+  const explainerTitles = [...document.querySelectorAll('.exp h3')];
+  document.querySelectorAll('.pipe .card').forEach(card=>{
+    const name = card.querySelector('.nm')?.textContent.trim();
+    const match = explainerTitles.find(h=>h.textContent.trim()===name);
+    if(!match) return;
+    const id = match.closest('.exp').id;
+    card.classList.add('jump');
+    card.setAttribute('role','link');
+    card.setAttribute('tabindex','0');
+    card.setAttribute('aria-label','See how '+name+' works');
+    card.addEventListener('click', ()=>jumpTo(id));
+    card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); jumpTo(id); } });
+  });
+
+  // Pause explainer animations when they are off-screen
+  const expIO = new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('off', !e.isIntersecting)), {threshold:0});
+  document.querySelectorAll('.exp').forEach(el=>expIO.observe(el));
+
+  // Repo cards (21 public repos; the duplicate "notecode-" is hidden)
+  const repos = [
+    {n:'noteCode_pp', d:'Notepad++ for Android. Multi-tab, regex find, Termux runner.', l:'Kotlin', s:'34 ★', t:'Open source', u:'https://github.com/knewnothing-git/noteCode_pp', up:'Sep 2026'},
+    {n:'ccgenie-privacy', d:'Privacy policy, terms and data deletion for the ccGenie app.', l:'HTML', s:'', t:'Compliance', u:'https://github.com/knewnothing-git/ccgenie-privacy', up:'Oct 2026'},
+    {n:'morpham-privacy', d:'Privacy policy for MorphAM.', l:'HTML', s:'', t:'Compliance', u:'https://github.com/knewnothing-git/morpham-privacy', up:'Sep 2026'},
+    {n:'paidtogov-privacy', d:'Privacy policy for the PaidToGov Android app.', l:'HTML', s:'', t:'Compliance', u:'https://github.com/knewnothing-git/paidtogov-privacy', up:'Aug 2026'},
+    {n:'ansys-mcp-server', d:'MCP server that wraps several Ansys products.', l:'Python', s:'69 ★', t:'Open source', u:'https://github.com/knewnothing-git/ansys-mcp-server', up:'Sep 2025'},
+    {n:'gpusion-driver', d:'Open-source virtual GPU driver for AI acceleration on Windows.', l:'C', s:'5 forks', t:'Open source', u:'https://github.com/knewnothing-git/gpusion-driver', up:'Sep 2026'},
+    {n:'text-to-cad', d:'Fork of a CAD, CAE and CAM agent-skills library. PR #265 merged upstream.', l:'Python', s:'fork', t:'Contribution', u:'https://github.com/knewnothing-git/text-to-cad', up:'Aug 2026'},
+    {n:'trade-MCP', d:'MCP-based trading assistant for Indian equity markets.', l:'JavaScript', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/trade-MCP', up:'Jul 2026'},
+    {n:'ai-affiliate-workflow', d:'Workflow for AI-assisted affiliate content.', l:'', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/ai-affiliate-workflow', up:'Jul 2026'},
+    {n:'taxPath', d:'Tax-path helper, TypeScript.', l:'TypeScript', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/taxPath', up:'Sep 2026'},
+    {n:'goldenHour', d:'Small JavaScript project.', l:'JavaScript', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/goldenHour', up:'Aug 2026'},
+    {n:'sonarquest-dev', d:'Test repo for SonarQuest, the code-quality tool.', l:'AGPL-3.0', s:'', t:'Test repo', u:'https://github.com/knewnothing-git/sonarquest-dev', up:'Aug 2026'},
+    {n:'Jobs_Applier_AI_Agent_AIHawk', d:'Fork of AIHawk, an AI agent for job applications.', l:'Python', s:'fork', t:'Fork', u:'https://github.com/knewnothing-git/Jobs_Applier_AI_Agent_AIHawk', up:'May 2026'},
+    {n:'affiliate-hub', d:'Affiliate hub, exported from a Caffeine project.', l:'TypeScript', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/affiliate-hub', up:'Mar 2026'},
+    {n:'videolipi', d:'Turn videos into AI-ready prompts.', l:'HTML', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/videolipi', up:'Oct 2025'},
+    {n:'india_tax_app', d:'Windows app for filling in an income tax return (ITR).', l:'', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/india_tax_app', up:'Aug 2025'},
+    {n:'mcp-autotest-platform', d:'Auto-test platform for MCP servers.', l:'TypeScript', s:'', t:'Open source', u:'https://github.com/knewnothing-git/mcp-autotest-platform', up:'Aug 2025'},
+    {n:'Granimals-growth', d:'Early project, 2025.', l:'', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/Granimals-growth', up:'Jul 2025'},
+    {n:'CricketMind', d:'Cricket analysis experiment.', l:'JavaScript', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/CricketMind', up:'Jul 2025'},
+    {n:'gitAppify', d:'Turns a GitHub repo into a mobile app workflow.', l:'', s:'', t:'Experiment', u:'https://github.com/knewnothing-git/gitAppify', up:'Jul 2025'}
+  ];
+  document.getElementById('repoGrid').innerHTML = repos.map(r=>
+    `<a class="repo rv" href="${r.u}" target="_blank" rel="noopener"><b>${r.n}</b><p>${r.d}</p><div class="m"><span>${r.t}</span>${r.l?`<span>${r.l}</span>`:''}${r.s?`<span>${r.s}</span>`:''}<span>${r.up}</span></div></a>`
+  ).join('');
+
+  // Hero headline: letters rise in
+  const hl = document.getElementById('hl');
+  const lines = hl.querySelectorAll('.ln');
+  lines.forEach((ln, li)=>{
+    const txt = ln.innerHTML;
+    // Split text nodes into letter spans, preserving the .hot span
+    const tmp = document.createElement('div'); tmp.innerHTML = txt;
+    const out = [];
+    const walk = (node, cls)=>{
+      node.childNodes.forEach(c=>{
+        if(c.nodeType===3){ [...c.textContent].forEach(ch=> out.push(`<span class="ch${cls?' '+cls:''}">${ch===' '?'&nbsp;':ch}</span>`)); }
+        else if(c.nodeType===1){ walk(c, c.className || cls); }
+      });
+    };
+    walk(tmp, '');
+    ln.innerHTML = out.join('');
+    ln.querySelectorAll('.ch').forEach((ch,i)=>setTimeout(()=>ch.classList.add('in'), 200 + li*300 + i*28));
+  });
+
+  // Reveal-on-scroll for every .rv
+  const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
+  const observeAll = ()=>document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+  observeAll();
+
+  // Count-up stats
+  const counted = new WeakSet();
+  const countIO = new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting || counted.has(e.target)) return;
+    counted.add(e.target);
+    const end = +e.target.dataset.count; const t0 = performance.now(); const dur = 1200;
+    const step = now=>{ const p = Math.min(1,(now-t0)/dur); e.target.textContent = Math.round(end*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(step); };
+    if(reduce) e.target.textContent = end; else requestAnimationFrame(step);
+  }),{threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(el=>countIO.observe(el));
+
+  // Header border on scroll
+  const hdr = document.getElementById('top');
+  addEventListener('scroll', ()=>hdr.classList.toggle('scrolled', scrollY>10), {passive:true});
+
+  // Carousel controls
+  const track = document.getElementById('track');
+  const step = ()=> (track.querySelector('.slide')?.offsetWidth || 340) + 16;
+  document.getElementById('next').onclick = ()=> track.scrollBy({left: step(), behavior:'smooth'});
+  document.getElementById('prev').onclick = ()=> track.scrollBy({left: -step(), behavior:'smooth'});
+
+  if(!window.gsap || !window.ScrollTrigger || reduce) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Pinned scene: three panels driven by scroll
+  const scenes = [
+    {l:'Scene 01 / 03', t:'Built on the path to paid.', b:'Each product gets the boring launch work done too: signing, store declarations, privacy policy, refund terms.'},
+    {l:'Scene 02 / 03', t:'Launch checklists, tracked live.', b:'Store submission is a checklist, not a guess. Items move from queued to in progress to done.'},
+    {l:'Scene 03 / 03', t:'Validate before scaling.', b:'Outreach, market reads and evaluation runs come before any spend on infrastructure.'}
+  ];
+  const sceneEls = gsap.utils.toArray('.board .scene');
+  const setScene = i=>{
+    sceneEls.forEach((s,j)=>s.classList.toggle('on', j===i));
+    document.getElementById('sLabel').textContent = scenes[i].l;
+    document.getElementById('sTitle').textContent = scenes[i].t;
+    document.getElementById('sBody').textContent = scenes[i].b;
+  };
+  ScrollTrigger.create({
+    trigger:'#pin', start:'top top', end:'bottom bottom', scrub:true,
+    onUpdate:self=>{
+      const i = Math.min(scenes.length-1, Math.floor(self.progress*scenes.length));
+      setScene(i);
+      gsap.to('#bar1', {width: Math.round(self.progress*100)+'%', duration:.2, overwrite:true});
+    }
+  });
+
+  // Pipeline cards cascade in when the column enters
+  gsap.utils.toArray('.col').forEach(col=>{
+    gsap.from(col.querySelectorAll('.card'), {
+      opacity:0, y:24, duration:.7, stagger:.08, ease:'power3.out',
+      scrollTrigger:{trigger:col, start:'top 80%', once:true}
+    });
+  });
+
+  // Hero parallax on scroll
+  gsap.to('#hl', {yPercent:-10, ease:'none', scrollTrigger:{trigger:'#hero', start:'top top', end:'bottom top', scrub:true}});
+})();
+</script>
+</body>
+</html>
